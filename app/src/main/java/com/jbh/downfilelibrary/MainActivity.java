@@ -4,11 +4,16 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
+
 import com.liulishuo.filedownloader.BaseDownloadTask;
 import com.liulishuo.filedownloader.FileDownloadLargeFileListener;
 import com.liulishuo.filedownloader.FileDownloadQueueSet;
 import com.liulishuo.filedownloader.FileDownloadSampleListener;
 import com.liulishuo.filedownloader.FileDownloader;
+import com.liulishuo.filedownloader.util.FileDownloadUtils;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -171,4 +176,50 @@ public class MainActivity extends AppCompatActivity {
         //(5)任务启动
         queueSet.start();
     }
+
+
+
+    /**
+     * 删除文件
+     */
+    public void deleteAllFile(){
+        //清除所有的下载任务
+        FileDownloader.getImpl().clearAllTaskData();
+        //清除所有下载的文件
+        int count = 0;
+        File file = new File(FileDownloadUtils.getDefaultSaveRootPath());
+        do {
+            if (!file.exists()) {
+                break;
+            }
+            if (!file.isDirectory()) {
+                break;
+            }
+            File[] files = file.listFiles();
+            if (files == null) {
+                break;
+            }
+            for (File file1 : files) {
+                count++;
+                file1.delete();
+            }
+        } while (false);
+        Toast.makeText(this, String.format("Complete delete %d files", count), Toast.LENGTH_LONG).show();
+    }
+
+
+
+
+//    注意 FileDownloader默认支持断点续传，如果想要重新从0开始 重新下载，必须
+//    将下载的文件和临时文件删除
+//    new File(mSinglePath).delete();
+//    new File(FileDownloadUtils.getTempPath(mSinglePath)).delete();
+
+
+//    //清除所有的下载任务
+//    FileDownloader.getImpl().clearAllTaskData();
+//    //删除单个任务的database记录
+//    boolean deleteData =  FileDownloader.getImpl().clear(singleTaskId,mSaveFolder);
+
+
 }
